@@ -1,0 +1,10 @@
+Academic Non-Commercial License
+
+Copyright (c) 2025 Bill Phipps, MD
+
+Permission is hereby granted, free of charge, to use, copy, modify, and distribute this software and its documentation for non-commercial academic research and educational purposes only, provided that:
+1. Appropriate credit is given to the original authors and this repository is cited in any derivative work or publication.
+2. This software is not used for commercial purposes or for-profit applications, including sale, licensing, or incorporation into proprietary products.
+3. This software is provided “as is” without warranty of any kind, express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, and non-infringement.
+
+Commercial use requires explicit written permission from the copyright holders.
