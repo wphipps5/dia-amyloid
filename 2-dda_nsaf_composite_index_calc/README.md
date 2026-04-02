@@ -2,20 +2,21 @@
 
 **Purpose**
 
-nsaf-composite-index-calc.py computes quantitative amyloid typing indices from protein-level normalized spectral abundance factor (NSAF) data derived from data-dependent acquisition (DDA) proteomics. The script calibrates composite indices using bounded Hill-type transformations that combine: **(1)** absolute abundance of amyloid precursor proteins **(2) **relative abundance relationships among biologically related proteins
+nsaf-composite-index-calc.py computes quantitative amyloid typing indices from protein-level normalized spectral abundance factor (NSAF) data derived from data-dependent acquisition (DDA) proteomics. The script calibrates composite indices using bounded Hill-type transformations that combine: **(1)** absolute abundance of amyloid precursor proteins **(2)** relative abundance relationships among biologically related proteins.
+
 Indices are computed at the replicate level, aggregated to the case level, and visualized using Type-versus-Other diagnostic plots. These continuous scores support conservative interpretation of amyloid subtype classification.
 
 **Script**
 nsaf-composite-index-calc.py
 
 **Required Inputs**
-The script expects the following files in the working directory.
+The script expects the following files in the working directory:
 
-spectral-counts.txt
+**spectral-counts.txt**
+
 Tab-delimited table containing normalized spectral abundance factor (NSAF) values for proteins across LC-MS/MS analyses.
 
 Typical structure:
-
 ProteinID Description Sample1 Sample2 Sample3 ...
 
 Values represent normalized spectral abundance factors derived from DDA proteomics.
