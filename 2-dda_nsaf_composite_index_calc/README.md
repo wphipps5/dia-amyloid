@@ -1,4 +1,4 @@
-NSAF Composite Index Calculation
+**NSAF Composite Index Calculation**
 Purpose
 nsaf-composite-index-calc.py computes quantitative amyloid typing indices from protein-level normalized spectral abundance factor (NSAF) data derived from data-dependent acquisition (DDA) proteomics.
 
