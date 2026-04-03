@@ -17,14 +17,8 @@ The pipeline implements a reproducible framework for assembling proteomic search
 The analysis progresses from protein‑level proteomics to peptide‑level machine learning classification.
 
 Tissue biopsy proteomics  
-→ Data‑dependent acquisition (DDA)  
-→ Protein identification and NSAF quantification  
-→ Amyloid proteome (dominant precursor protein signals)  
-→ Empirical amyloid peptidome (peptides derived from abundant proteins)  
-→ Data‑independent acquisition (DIA) peptide quantification  
-→ Peptide feature matrix  
-→ Random Forest classification  
-→ Amyloid subtype prediction
+Data‑dependent acquisition (DDA) → Protein identification and NSAF quantification → Amyloid proteome (dominant precursor protein signals)  
+→ Empirical amyloid peptidome (peptides derived from abundant proteins) → Data‑independent acquisition (DIA) peptide quantification → Peptide feature matrix → Random Forest classification → Amyloid subtype prediction
 
 This framework mirrors the analytical strategy described in the manuscript, where protein‑level enrichment patterns identified by DDA proteomics are translated into peptide‑level quantitative features measured by DIA.
 
