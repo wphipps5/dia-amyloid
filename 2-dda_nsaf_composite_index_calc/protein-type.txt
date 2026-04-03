@@ -1,0 +1,18 @@
+Type	Protein_01	Protein_02	Protein_03	Protein_04	Protein_05	Protein_06	Protein_07	Protein_08	Protein_09	Protein_10	Protein_11	Protein_12	Protein_13	Protein_14	Protein_15	Protein_16	Protein_17	Protein_18	Protein_19	Protein_20	Protein_21	Protein_22	Protein_23	Protein_24	Protein_25	Protein_26	Protein_27	Protein_28	Protein_29	Protein_30	Protein_31	Protein_32	Protein_33	Protein_34	Protein_35	Protein_36	Protein_37	Protein_38	Protein_39	Protein_40	Protein_41	Protein_42	Protein_43
+ALK	P01834	A0A0A0MT89	P0DOX7	A0A075B6P5	A0A075B6S2	A0A075B6S4	A0A075B6S5	A0A075B6S6	A0A087WSY6	A0A087WSZ0	A0A087WW87	A0A0A0MRZ7	A0A0A0MRZ8	A0A0A0MT36	A0A0B4J1Z2	A0A0B4J2D9	A0A0C4DH24	A0A0C4DH25	A0A0C4DH55	A0A0C4DH67	A0A0C4DH68	A0A0C4DH69	A0A0C4DH72	A0A0C4DH73	A2NJV5	P01593	P01594	P01597	P01599	P01601	P01602	P01611	P01614	P01615	P01619	P01624	P04430	P04432	P04433	P06310	P06312	P06315	P0DP09
+ALL	A0M8Q6	P0CF74	P0CG04	P0DOY2	P0DOY3	A0A0A0MT76	A0A075B6H9	A0A075B6I0	A0A075B6I1	A0A075B6I4	A0A075B6I9	A0A075B6J1	A0A075B6J6	A0A075B6J9	A0A075B6K0	A0A075B6K2	A0A075B6K4	A0A075B6K5	A0A075B6K6	A0A087WSX0	A0A0A0MRZ9	A0A0B4J1U3	A0A0B4J1Y8	A0A0G2JS06	P01699	P01700	P01701	P01703	P01704	P01705	P01706	P01709	P01714	P01715	P01717	P01718	P01721	P04211	P80748	P0DOX8			
+B2M	P61769																																										
+CAL	P01258																																										
+ENF	ENFUVIRTIDE																																										
+FIB	P02671																																										
+HMU	P01871																																										
+ILA	P18510																																										
+INS	P01308																																										
+KER	P02533	P13647																																									
+LT2	O14960																																										
+SAA	P0DJI8																																										
+SEM	P04279																																										
+THY	P02766																																										
+LYS	P61626																																										
+AA1	P02647																																										
+AA4	P06727																																										
