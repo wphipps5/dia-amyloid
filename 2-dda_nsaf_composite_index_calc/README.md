@@ -1,22 +1,24 @@
-**NSAF Composite Index Calculation**
+NSAF Composite Index Calculation
+Purpose
+nsaf-composite-index-calc.py computes quantitative amyloid typing indices from protein-level normalized spectral abundance factor (NSAF) data derived from data-dependent acquisition (DDA) proteomics.
 
-**Purpose**
+The script calibrates composite indices using bounded Hill-type transformations that combine:
 
-nsaf-composite-index-calc.py computes quantitative amyloid typing indices from protein-level normalized spectral abundance factor (NSAF) data derived from data-dependent acquisition (DDA) proteomics. The script calibrates composite indices using bounded Hill-type transformations that combine: **(1)** absolute abundance of amyloid precursor proteins **(2)** relative abundance relationships among biologically related proteins.
-
+absolute abundance of amyloid precursor proteins
+relative abundance relationships among biologically related proteins
 Indices are computed at the replicate level, aggregated to the case level, and visualized using Type-versus-Other diagnostic plots. These continuous scores support conservative interpretation of amyloid subtype classification.
 
-**Script**
+Script
 nsaf-composite-index-calc.py
 
-**Required Inputs**
-The script expects the following files in the working directory:
+Required Inputs
+The script expects the following files in the working directory.
 
-**spectral-counts.txt**
-
-Tab-delimited table containing normalized spectral abundance factor (NSAF) values for proteins across LC-MS/MS analyses.
+spectral-counts.txt
+Tab-delimited table containing normalized spectral abundance factor (NSAF) values for proteins across LC–MS/MS analyses.
 
 Typical structure:
+
 ProteinID Description Sample1 Sample2 Sample3 ...
 
 Values represent normalized spectral abundance factors derived from DDA proteomics.
@@ -55,24 +57,20 @@ audit-codes.csv
 README.md
 
 Output
-All results are written to an output/ directory.
+All results are written to an output directory.
 
-Final organized outputs include:
+Key outputs include:
 
 output/index_calc_by_repl/
-
 Replicate-level index calculations and supporting tables.
 
 output/index_calc_by_case/
-
 Case-level index summaries and visualizations.
 
 output/index_calc_by_case/tables/
-
 CASE-level index tables.
 
 output/index_calc_by_case/plots/
-
 Diagnostic plots showing Type-versus-Other distributions.
 
 Intermediate staging directories used during computation are automatically removed after processing.
@@ -84,11 +82,10 @@ Lambda light chain amyloidosis
 Kappa light chain amyloidosis
 Fibrinogen A amyloidosis
 Keratin-associated amyloidosis
-
-A lambda-kappa differential index is also calculated to support discrimination between AL lambda and AL kappa amyloidosis.
+A lambda–kappa differential index is also calculated to support discrimination between AL lambda and AL kappa amyloidosis.
 
 Run
-Execute the script from the directory containing the input files:
+Run the script from the directory containing the input files:
 
 python nsaf-composite-index-calc.py
 
