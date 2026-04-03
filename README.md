@@ -1,31 +1,216 @@
-# dia-amyloid
-DIA Amyloid Proteomics Pipeline
-This repository contains scripts used for proteomic analysis and classification of amyloid deposits from tissue biopsies using liquid chromatography–tandem mass spectrometry (LC–MS/MS). The workflow integrates data‑dependent acquisition (DDA) proteomics with data‑independent acquisition (DIA) peptide quantification and machine learning–based classification.
+# DIA Amyloid Proteomics Pipeline
 
-The scripts implement a reproducible pipeline for assembling proteomic search databases, extracting diagnostic peptide features, training classification models, and computing quantitative indices used in amyloid typing.
+This repository contains scripts used for proteomic analysis and classification of amyloid deposits from tissue biopsies using liquid chromatography–tandem mass spectrometry (LC–MS/MS).
 
-Overview
-The pipeline combines protein‑level and peptide‑level proteomic analysis to support amyloid subtype classification. Initial stages use DDA proteomics to identify proteins and derive quantitative indices based on normalized spectral abundance factors (NSAF). These data are then used to define an empirical amyloid peptidome, which forms the basis for DIA peptide quantification and machine‑learning classification.
+The workflow integrates:
 
-Pipeline Structure
-The repository is organized into numbered directories corresponding to the major stages of the analysis workflow.
+- data‑dependent acquisition (DDA) proteomics  
+- data‑independent acquisition (DIA) peptide quantification  
+- machine‑learning classification of amyloid subtype  
 
-1‑dda_fasta_assembly
-Construction of the proteomic search FASTA database including canonical human proteins, isoforms, missense variants, and supplemental amyloid‑associated sequences.
+The pipeline implements a reproducible framework for assembling proteomic search databases, extracting diagnostic peptide features, training classification models, and evaluating prospective samples.
 
-2‑dda_nsaf_composite_index_calc
+---
+
+# Conceptual Workflow
+
+The analysis progresses from protein‑level proteomics to peptide‑level machine learning classification.
+
+Tissue Biopsy Proteomics
+│
+▼
+Data‑Dependent Acquisition (DDA)
+│
+▼
+Protein Identification & NSAF Quantification
+│
+▼
+Amyloid Proteome
+(dominant precursor protein signals)
+│
+▼
+Empirical Amyloid Peptidome
+(peptides derived from abundant proteins)
+│
+▼
+Data‑Independent Acquisition (DIA)
+Peptide Quantification
+│
+▼
+Peptide Feature Matrix
+│
+▼
+Random Forest Classification
+│
+▼
+Amyloid Subtype Prediction
+
+
+This framework mirrors the analytical strategy described in the manuscript, where protein‑level enrichment patterns identified by DDA proteomics are translated into peptide‑level quantitative features measured by DIA.
+
+---
+
+# Repository Structure
+
+The repository is organized into numbered directories corresponding to the major stages of the pipeline.
+
+## 1-dda_fasta_assembly
+
+Construction of the proteomic search FASTA database including:
+
+- canonical human proteins  
+- isoforms  
+- missense variants  
+- supplemental amyloid‑associated sequences  
+
+Script:
+
+amyloid-dda-fasta.py
+
+---
+
+## 2-dda_nsaf_composite_index_calc
+
 Computation of protein‑level normalized spectral abundance factor (NSAF) indices and diagnostic visualizations from DDA proteomics data.
 
-3‑dda_peptidome_extraction
-Extraction of an empirical amyloid peptidome from DDA peptide identifications.
+These indices integrate:
 
-4‑Process_DIA_Peptides
-Processing of DIA peptide measurements and construction of the DIA feature matrix.
+- absolute precursor protein abundance  
+- proportional relationships among related proteins  
 
-5‑Train_Classifier
-Training and evaluation of machine‑learning models for amyloid subtype classification.
+Script:
 
-6‑dia_test_set_evaluation
-Application of trained classifiers to independent or prospective DIA datasets.
+nsaf-composite-index-calc.py
 
-The numbered directory structure reflects the order in which scripts are typically executed during analysis.
+---
+
+## 3-dda_peptidome_extraction
+
+Extraction of an empirical **amyloid peptidome** from DDA peptide identification results.
+
+Steps include:
+
+- ranking proteins by NSAF  
+- selecting dominant proteins  
+- extracting peptide evidence from Percolator output  
+- generating peptide lists for downstream DIA analysis  
+
+Script:
+
+extract-peptidome.py
+
+---
+
+## 4-process_dia_peptides
+
+Processing of peptide measurements from DIA LC–MS/MS analyses exported from Skyline.
+
+Functions include:
+
+- quality control filtering  
+- fragment intensity normalization  
+- construction of the DIA peptide feature matrix  
+- AUROC evaluation of diagnostic peptide signals  
+
+Script:
+
+process-dia-peptides.py
+
+---
+
+## 5-train_classifier
+
+Training and evaluation of Random Forest classifiers for amyloid subtype classification.
+
+Outputs include:
+
+- classifier performance metrics  
+- feature importance analysis  
+- trained model package  
+
+Script:
+
+train_rf_classifier.py
+
+---
+
+## 6-dia_test_set_evaluation
+
+Application of trained classifiers to prospective DIA datasets.
+
+The script:
+
+- constructs peptide feature matrices for new samples  
+- generates subtype probability predictions  
+- computes peptide evidence scores for low‑confidence predictions  
+
+Script:
+
+infer_prospective_cases.py
+
+---
+
+# Software Requirements
+
+Python 3 is required.
+
+Required packages:
+
+numpy  
+pandas  
+scikit‑learn  
+scipy  
+matplotlib  
+joblib  
+
+Install dependencies using:
+
+pip install -r requirements.txt
+
+
+---
+
+# Data Inputs
+
+Several pipeline steps require user‑supplied proteomics datasets.
+
+## DDA data
+
+- spectral counts derived from DDA database search results  
+- Percolator peptide output files  
+
+These files are dataset‑specific and are not included in this repository.
+
+## DIA data
+
+Skyline export reports containing peptide fragment ion measurements.
+
+Typical columns include:
+
+Replicate Name  
+Protein  
+Precursor  
+Total Area Fragment  
+Total Area  
+Isotope Dot Product  
+Library Dot Product  
+
+---
+
+# Typical Workflow
+
+1. Build the DDA search FASTA database  
+2. Identify proteins and peptides from DDA LC–MS/MS data  
+3. Compute NSAF‑based composite indices  
+4. Extract the empirical amyloid peptidome  
+5. Process DIA peptide measurements  
+6. Train the Random Forest classifier  
+7. Apply the classifier to prospective samples  
+
+---
+
+# Notes
+
+The workflow reflects interpretive strategies commonly used in proteomic amyloid typing, combining enrichment of amyloid precursor proteins with relative abundance relationships among related proteins.
+
+Machine‑learning classification is performed using peptide‑level features derived from DIA analyses.
