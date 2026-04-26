@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`extract-peptidome.py` identifies dominant proteins from normalized spectral abundance factor (NSAF) data and extracts peptide evidence for those proteins from Percolator peptide output files.
+`extract-dda-peptidome.py` identifies dominant proteins from normalized spectral abundance factor (NSAF) data and extracts peptide evidence for those proteins from Percolator peptide output files.
 
 The script constructs an empirical **amyloid peptidome** by identifying peptides associated with the most abundant proteins in the DDA proteomics dataset. These peptides are later used as diagnostic features for downstream DIA peptide quantification and classification.
 
@@ -20,7 +20,7 @@ The workflow performs the following steps:
 
 ## Script
 
-`extract-peptidome.py`
+`extract-dda-peptidome.py`
 
 ---
 
@@ -85,7 +85,7 @@ Users should modify this variable if their Percolator peptide output files are l
 
 3-dda_peptidome_extraction/
 
-extract-peptidome.py  
+extract-dda-peptidome.py  
 spectral-counts.txt  
 README.md  
 
@@ -132,7 +132,7 @@ Percolator q‑value threshold for peptide filtering.
 
 ## Run
 
-python extract-peptidome.py
+python extract-dda-peptidome.py
 
 ---
 
