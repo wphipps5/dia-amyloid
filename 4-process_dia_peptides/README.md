@@ -102,7 +102,7 @@ Major outputs include:
 
 Peptide feature matrix containing normalized fragment ion intensities for each replicate.
 
-Columns correspond to peptide precursor features and rows correspond to LC–MS/MS replicates.
+Columns include Replicate (injection identifier), Type (amyloid subtype parsed from replicate name), and peptide precursor features. Rows correspond to LC–MS/MS replicates.
 
 ---
 
@@ -110,7 +110,7 @@ Columns correspond to peptide precursor features and rows correspond to LC–MS/
 
 Machine-learning training dataset derived from the peptide feature matrix.
 
-This dataset includes peptide features restricted to amyloid-associated proteins and filtered to amyloid types used for classifier training.
+Columns include Replicate (injection identifier), Type (amyloid subtype label), and peptide features restricted to amyloid-associated proteins. Rows are filtered to amyloid types supported by the classifier.
 
 ---
 
@@ -148,7 +148,7 @@ Additional filtering steps include:
 
 - removal of decoy protein entries  
 - removal of zero fragment signals  
-- replicate-level signal normalization using summed fragment ion area
+- replicate-level signal normalization using summed total area (PSNF)
 
 ---
 
