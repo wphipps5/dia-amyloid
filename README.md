@@ -71,7 +71,7 @@ Steps include:
 
 Script:
 
-extract-peptidome.py
+extract-dda-peptidome.py
 
 ---
 
@@ -104,7 +104,7 @@ Outputs include:
 
 Script:
 
-train_rf_classifier.py
+train-rf-classifier.py
 
 ---
 
@@ -120,7 +120,7 @@ The script:
 
 Script:
 
-infer_prospective_cases.py
+amyloid-type-classifier.py
 
 ---
 
