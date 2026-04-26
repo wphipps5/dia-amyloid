@@ -2,15 +2,15 @@
 
 ## Purpose
 
-`train_rf_classifier.py` trains and evaluates a Random Forest classifier for amyloid subtype classification using peptide‑level DIA features.
+train-rf-classifier.py trains and evaluates a Random Forest classifier for amyloid subtype classification using peptide‑level DIA features.
 
-The script performs stratified cross‑validation to estimate classification performance, computes feature importance scores, and trains a final classifier using the full dataset. The trained model and associated metadata are saved for downstream prediction of amyloid subtype in prospective DIA samples.
+The script performs two stratified cross‑validation strategies to estimate classification performance, computes feature importance scores, and trains a final classifier using the full dataset. The trained model and associated metadata are saved for downstream prediction of amyloid subtype in prospective DIA samples.
 
 ---
 
 ## Script
 
-train_rf_classifier.py
+train-rf-classifier.py
 
 ---
 
@@ -24,88 +24,96 @@ Each row represents a single LC–MS/MS replicate.
 
 The dataset must contain:
 
-• a column named **Type** indicating the amyloid subtype label  
+• a column named **Replicate** containing the LC–MS/MS injection identifier
+• a column named **Type** indicating the amyloid subtype label
 • multiple columns representing quantitative peptide features
 
 Example structure:
 
-Type,feature1,feature2,feature3,...,featureN
+Replicate,Type,feature1,feature2,feature3,...,featureN
 
 Example:
 
-Type,ap|P02766-x|K.TSSEGLHGLTEEEEFVGVK.V|624,ap|P02766-x|R.GSPAINVAVHFR.K|612,...
-ALL,0.0000132,0,0.0000081,...
-ALK,0,0.0000215,0,...
-THY,0.0000187,0,0,...
+DIA-THY0218-240101-A.1,THY,0.0000187,0,0,...
+DIA-ALL0234-240227-A.1,ALL,0.0000132,0,0.0000081,...
+DIA-ALK0157-240227-A.1,ALK,0,0.0000215,0,...
 
-Feature columns correspond to peptide precursor features extracted from DIA analyses. Values represent normalized peptide fragment ion intensities.
+Feature columns correspond to peptide precursor features extracted from DIA analyses. Values represent normalized peptide fragment ion intensities. Missing values should be represented as 0.
 
 Important requirements:
 
-• The **Type column must exist** and contain amyloid subtype labels.  
-• All other columns are treated as numeric peptide features.  
-• Missing values should be represented as **0**.  
-• Each row corresponds to **one DIA replicate**.
+• The **Replicate** column must exist and contain injection identifiers used for tissue block extraction during block‑grouped cross‑validation.
+• The **Type** column must exist and contain amyloid subtype labels.
+• All other columns are treated as numeric peptide features.
 
 ---
 
 ## Example Directory Structure
 
-5-Train_Classifier/
+5-train_classifier/
 
-train_rf_classifier.py  
-rf_training_data.csv  
+train-rf-classifier.py
+rf_training_data.csv
 README.md
 
 ---
 
 ## Output
 
-All results are written to:
+All results are written to subdirectories of:
 
 output/
 
-### Cross‑Validation Performance
+Two sets of cross‑validation outputs are produced, plus a trained model package.
 
-per_fold_performance.csv  
+---
+
+### output/block_naive/
+
+Results from injection‑level cross‑validation (StratifiedKFold).
+
+per_fold_performance.csv
 Performance metrics for each cross‑validation fold.
 
-summary_performance.csv  
+summary_performance.csv
 Mean and standard deviation of accuracy, precision, recall, and F1‑score across folds.
 
-per_fold_classification_report.csv  
+per_fold_classification_report.csv
 Per‑class performance metrics for each fold.
 
-classification_report.csv  
+classification_report.csv
 Combined classification report based on pooled predictions.
 
-confusion_matrix.csv  
+confusion_matrix.csv
 Confusion matrix summarizing classifier performance.
 
----
-
-### Feature Analysis
-
 feature_importance.csv
-
-Table ranking peptide features by mean importance across cross‑validation models. This provides insight into which peptide signals contribute most strongly to subtype discrimination.
+Table ranking peptide features by mean importance across cross‑validation models.
 
 ---
 
-### Trained Model Package
+### output/block_grouped/
 
-output/model_package/
+Results from tissue block‑level cross‑validation (StratifiedGroupKFold).
 
-rf_model.joblib  
-Serialized Random Forest classifier.
+Contains the same set of output files as output/block_naive/.
 
-feature_schema.csv  
-List of feature columns used during training.
+---
 
-label_encoder.joblib  
+### output/block_naive/model_package/
+
+Trained model package saved after fitting the final classifier on the full dataset.
+
+rf_model.joblib
+Serialized Random Forest classifier trained on the full dataset.
+
+feature_schema.csv
+Ordered list of peptide features used during training.
+
+label_encoder.joblib
 Encoder mapping subtype labels to numeric class indices.
 
-These files are required for applying the classifier to prospective datasets.
+These files are required for applying the classifier to prospective datasets using amyloid-type-classifier.py.
 
 ---
 
@@ -113,31 +121,39 @@ These files are required for applying the classifier to prospective datasets.
 
 Default Random Forest parameters:
 
-N_TREES = 500  
+N_TREES = 500
 Number of decision trees in the ensemble.
 
-CLASS_WEIGHT = balanced  
+CLASS_WEIGHT = balanced
 Adjusts class weights to compensate for class imbalance.
 
-N_JOBS = -1  
+N_JOBS = -1
 Uses all available CPU cores during training.
 
 ---
 
 ## Cross‑Validation
 
-The classifier is evaluated using stratified K‑fold cross‑validation.
+The classifier is evaluated using two stratified five‑fold cross‑validation strategies applied to the same training data.
+
+### Injection‑level cross‑validation (StratifiedKFold)
 
 N_SPLITS = 5
 
-Stratification ensures that each fold preserves the distribution of amyloid subtypes.
+Individual LC–MS/MS injections are assigned to folds independently. Stratification preserves the distribution of amyloid subtypes across training and test partitions. Results are written to output/block_naive/.
+
+### Block‑level cross‑validation (StratifiedGroupKFold)
+
+N_SPLITS = 5
+
+Tissue block identifiers are used as grouping variables, ensuring that all injections derived from the same tissue block are assigned exclusively to either the training or test fold. Block identifiers are extracted from replicate names using the pattern DIA‑[TYPE][BLOCK]. This strategy prevents data leakage across injections from the same specimen. Results are written to output/block_grouped/.
 
 Performance metrics include:
 
-• Accuracy  
-• Precision (macro‑averaged)  
-• Recall (macro‑averaged)  
-• F1 score (macro‑averaged)
+• Accuracy
+• Precision (macro‑averaged)
+• Recall (macro‑averaged)
+• F1‑score (macro‑averaged)
 
 ---
 
@@ -145,14 +161,14 @@ Performance metrics include:
 
 Run the script from the directory containing the training dataset:
 
-python train_rf_classifier.py
+python train-rf-classifier.py
 
 ---
 
 ## Notes
 
-The script first evaluates classifier performance using cross‑validation before training a final model on the complete dataset.
+The script first evaluates classifier performance using both cross‑validation strategies before training a final model on the complete dataset.
 
-Feature importance values represent the average contribution of each peptide feature across the cross‑validation models.
+Feature importance values represent the average contribution of each peptide feature across the injection‑level cross‑validation models.
 
-The resulting model package is used by downstream scripts to predict amyloid subtype for prospective DIA datasets.
+The resulting model package is used by amyloid-type-classifier.py to predict amyloid subtype for prospective DIA datasets.
