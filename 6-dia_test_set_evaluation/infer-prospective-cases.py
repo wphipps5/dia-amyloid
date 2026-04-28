@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """
-infer_prospective_cases.py
+amyloid-type-classifier.py
 Apply trained RF classifier to prospective DIA samples
 and compute peptide evidence scores.
-Implements pipeline Steps 26–28.
 """
 
 import os
