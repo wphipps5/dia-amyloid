@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-extract-peptidome.py
+extract-dda-peptidome.py
 
 Identify dominant proteins from NSAF spectral count data and
 extract corresponding peptide evidence from Percolator peptide
