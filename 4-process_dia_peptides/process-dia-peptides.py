@@ -24,7 +24,7 @@ OUT_DIR = "output"
 # Quality control thresholds
 # ------------------------------------------------------------
 
-# Initial Skyline dot‑product filtering
+# Initial Skyline dot-product filtering
 DOTP_THRESHOLD = 0.7
 
 # Strict QC thresholds
@@ -91,10 +91,11 @@ if not files:
 
 reduced_rows = []
 
-for fname in files:
+for i, fname in enumerate(files, start=1):
+    print(f"[STEP 1] Reading file {i}/{len(files)}: {fname}")
 
     path = os.path.join(INPUT_DIR, fname)
-    df = pd.read_csv(path)
+    df = pd.read_csv(path, low_memory=False)
 
     cols = {c.lower(): c for c in df.columns}
 
@@ -201,6 +202,15 @@ print("Matrix written:", matrix_file)
 
 print("[STEP 4] AUROC feature audit")
 
+def wilson_ci(p, n, z=1.96):
+    """Wilson score confidence interval for a proportion."""
+    if n == 0 or np.isnan(p):
+        return np.nan, np.nan
+    denom = 1 + z**2 / n
+    center = (p + z**2 / (2 * n)) / denom
+    half = z * np.sqrt(p * (1 - p) / n + z**2 / (4 * n**2)) / denom
+    return max(0.0, center - half), min(1.0, center + half)
+
 type_map = load_type_map(PROTEIN_TYPE_FILE)
 
 features = [c for c in matrix.columns if c not in {"CodeName", "Type"}]
@@ -255,11 +265,22 @@ for type_code, accs in type_map.items():
 
             spec_cut = np.max(neg_vals) if len(neg_vals) else np.nan
 
+        n_pos = len(pos_vals)
+        n_neg = len(neg_vals)
+        sens_lo, sens_hi = wilson_ci(sens, n_pos)
+        spec_lo, spec_hi = wilson_ci(spec, n_neg)
+
         rows.append({
             "Feature": feat,
             "AUROC": auc,
             "Sensitivity": sens,
+            "Sensitivity_CI_lower": sens_lo,
+            "Sensitivity_CI_upper": sens_hi,
             "Specificity": spec,
+            "Specificity_CI_lower": spec_lo,
+            "Specificity_CI_upper": spec_hi,
+            "N_pos": n_pos,
+            "N_neg": n_neg,
             "BestCutoff": best_cut,
             "SpecificityCutoff": spec_cut,
             "BelongsToType": extract_accession(feat) in accs
@@ -276,15 +297,15 @@ for type_code, accs in type_map.items():
 print("[DONE]")
 
 # ============================================================
-# STEP 24 — CREATE RF TRAINING DATASET
+# STEP 24 - CREATE RF TRAINING DATASET
 # ============================================================
 print("[STEP 24] Creating RF training dataset")
 
 # Copy matrix
 rf_df = matrix.copy()
 
-# Drop CodeName column
-rf_df = rf_df.drop(columns=["CodeName"])
+# Preserve replicate identifier
+rf_df = rf_df.rename(columns={"CodeName": "Replicate"})
 
 # ------------------------------------------------------------
 # Filter rows by ML-supported amyloid types
@@ -295,7 +316,7 @@ after_rows = len(rf_df)
 
 print(
     f"[FILTER] Rows by Type {sorted(ML_TYPES)}: "
-    f"{before_rows} → {after_rows}"
+    f"{before_rows} -> {after_rows}"
 )
 
 # ------------------------------------------------------------
@@ -311,10 +332,10 @@ if RESTRICT_RF_TO_AMYLOID_PROTEINS:
                 amyloid_accs.add(val.strip().upper())
 
 # Determine which feature columns to keep
-keep_cols = ["Type"]
+keep_cols = ["Replicate", "Type"]
 
 for col in rf_df.columns:
-    if col == "Type":
+    if col in {"Replicate", "Type"}:
         continue
 
     acc = extract_accession(col)
@@ -333,7 +354,7 @@ print(
 # ------------------------------------------------------------
 # Ensure numeric feature values
 # ------------------------------------------------------------
-feature_cols = [c for c in rf_df.columns if c != "Type"]
+feature_cols = [c for c in rf_df.columns if c not in {"Replicate", "Type"}]
 
 rf_df[feature_cols] = (
     rf_df[feature_cols]
@@ -350,7 +371,7 @@ rf_df.to_csv(rf_out, index=False)
 print(f"[OK] RF training dataset written: {rf_out}")
 
 # ============================================================
-# STEP 5 — PACKAGE PEPTIDE THRESHOLD TABLES
+# STEP 5 - PACKAGE PEPTIDE THRESHOLD TABLES
 # ============================================================
 
 THRESH_DIR = os.path.join(OUT_DIR, "peptide_thresholds")
@@ -405,14 +426,74 @@ audit_compiled = audit_compiled.sort_values(
     ascending=[True, False, False]
 )
 
+# ------------------------------------------------------------
+# Rename Type codes to amyloid display names and re-sort
+# ------------------------------------------------------------
+
+TYPE_DISPLAY_NAMES = {
+    "SAA": "AA",
+    "AA1": "AApoA1",
+    "B2M": "Abeta2M",
+    "CAL": "ACal",
+    "FIB": "AFib",
+    "ILA": "AIL1KA",
+    "INS": "AIns",
+    "KER": "AKer",
+    "ALK": "AL kappa",
+    "ALL": "AL lambda",
+    "LT2": "ALect2",
+    "SEM": "ASem",
+    "THY": "ATTR",
+    "HMU": "Heavy mu",
+}
+
+audit_compiled["Type"] = audit_compiled["Type"].map(TYPE_DISPLAY_NAMES).fillna(audit_compiled["Type"])
+
+audit_compiled["_type_sort"] = audit_compiled["Type"].str.lower()
+audit_compiled = audit_compiled.sort_values(
+    by=["_type_sort", "Sensitivity", "Specificity"],
+    ascending=[True, False, False]
+)
+audit_compiled = audit_compiled.drop(columns=["_type_sort"])
+
+# ------------------------------------------------------------
+# Format CI columns for publication tables
+# ------------------------------------------------------------
+
+def _fmt_ci(row, val_col, lo_col, hi_col):
+    return f"{row[val_col]:.3f} ({row[lo_col]:.3f}-{row[hi_col]:.3f})"
+
+def format_for_table(df):
+    df = df.copy()
+    df["Sensitivity (95% CI)"] = df.apply(
+        _fmt_ci, axis=1,
+        val_col="Sensitivity", lo_col="Sensitivity_CI_lower", hi_col="Sensitivity_CI_upper"
+    )
+    df["Specificity (95% CI)"] = df.apply(
+        _fmt_ci, axis=1,
+        val_col="Specificity", lo_col="Specificity_CI_lower", hi_col="Specificity_CI_upper"
+    )
+    drop_cols = [
+        "Sensitivity", "Sensitivity_CI_lower", "Sensitivity_CI_upper",
+        "Specificity", "Specificity_CI_lower", "Specificity_CI_upper",
+        "BelongsToType"
+    ]
+    df = df.drop(columns=[c for c in drop_cols if c in df.columns])
+    col_order = [
+        "Type", "Feature", "AUROC",
+        "Sensitivity (95% CI)", "Specificity (95% CI)",
+        "N_pos", "N_neg", "BestCutoff", "SpecificityCutoff"
+    ]
+    return df[[c for c in col_order if c in df.columns]]
+
 compiled_path = os.path.join(THRESH_DIR, "audit_compiled.csv")
 
-audit_compiled.to_csv(compiled_path, index=False)
+format_for_table(audit_compiled).to_csv(compiled_path, index=False)
 
 print("Compiled audit table written:", compiled_path)
 
 # ------------------------------------------------------------
-# Create top‑3 peptides per type
+# Create top-3 peptides per type
 # ------------------------------------------------------------
 
 audit_top3 = (
@@ -423,6 +504,6 @@ audit_top3 = (
 
 top3_path = os.path.join(THRESH_DIR, "audit_compiled_top3.csv")
 
-audit_top3.to_csv(top3_path, index=False)
+format_for_table(audit_top3).to_csv(top3_path, index=False)
 
-print("Top‑3 peptide table written:", top3_path)
+print("Top-3 peptide table written:", top3_path)
