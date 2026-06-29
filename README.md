@@ -1,4 +1,4 @@
-![chromatograms]fig_3_screenshot.png
+![chromatograms](fig_3_screenshot.png)
 
 # DIA Amyloid Proteomics Pipeline
 
