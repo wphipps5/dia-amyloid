@@ -81,7 +81,7 @@ model_package/
     feature_schema.csv
     label_encoder.joblib
 peptide_thresholds/
-    Audit_THY.csv
+    Audit_TTR.csv
     Audit_ALL.csv
     Audit_ALK.csv
     ...
