@@ -135,6 +135,7 @@ pandas
 scikit‑learn  
 scipy  
 matplotlib  
+seaborn  
 joblib  
 
 Install dependencies using:
