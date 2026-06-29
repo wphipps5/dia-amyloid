@@ -1,3 +1,5 @@
+!fig_3_screenshot.png
+
 # DIA Amyloid Proteomics Pipeline
 
 This repository contains scripts used for proteomic analysis and classification of amyloid deposits from tissue biopsies using liquid chromatography–tandem mass spectrometry (LC–MS/MS).
